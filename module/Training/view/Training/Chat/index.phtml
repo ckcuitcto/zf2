@@ -1,0 +1,40 @@
+<?php
+$this->headScript()->appendScript('
+    $(document).ready(function(){
+        $("#refresh").click(function(e){
+            document.getElementById("messageListFrame").contentWindow.location.reload(true);
+        });
+        setInterval(refreshIframe,3000);
+        function refreshIframe(){
+            document.getElementById("messageListFrame").contentWindow.location.reload(true);
+        };
+    });
+','text/javascript');
+
+?>
+<div class="row">
+    <div class="col-md-7">
+        <h3> Chat</h3>
+        <p>Hệ thống hỗ trợ thảo luận cho thành viên</p>
+        <iframe src="<?php echo $this->url('training/chat', array('action'=>'listMessage')); ?> " width="80%" height="360px" id="messageListFrame">
+
+        </iframe>
+        <?php
+//        $form = $this->form;
+        $form->prepare();
+        $form->setAttribute('action',$this->url('training/chat',array('action' => 'index')));
+
+        echo $this->form()->openTag($form);
+        echo "<div class='form-group'>";
+        echo $this->formLabel($form->get('mess'))." ";
+        echo $this->formElement($form->get('mess'));
+        echo $this->formElementErrors($form->get('mess'));
+        echo "<div>";
+
+        echo $this->formElement($form->get('submit'))." ";
+        echo $this->formElement($form->get('refresh'));
+        echo $this->form()->closeTag();
+
+        ?>
+    </div>
+</div>

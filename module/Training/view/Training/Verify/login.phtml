@@ -1,0 +1,48 @@
+<div class="row">
+    <div class="col-md-4">
+        <h3>Đăng nhập</h3>
+        <p>Vui lòng nhập đầy đủ thông tin bên dưới</p>
+
+        <?php
+        if($this->error != ""){
+            echo "<div class='alert alert-danger'>";
+            echo $this->error;
+            echo "</div>";
+        }
+        if(count($this->flash)){
+            echo "<div class='alert alert-success'>";
+            foreach ($this->flash as $value)
+            echo $value;
+            echo "</div>";
+        }
+        $form = $this->form;
+        $form->prepare();
+
+        $form->setAttribute('action', $this->url('training/verify', array('action' => 'login')));
+
+        echo $this->form()->openTag($form);
+        echo "<div class='form-group'>";
+        echo $this->formLabel($form->get('username'));
+        echo $this->formElement($form->get('username'));
+        echo $this->formElementErrors($form->get('username'));
+        echo "</div>";
+        echo "<div class='form-group'>";
+        echo $this->formLabel($form->get('password'));
+        echo $this->formElement($form->get('password'));
+        echo $this->formElementErrors($form->get('password'));
+        echo "</div>";
+
+        echo "<div class='form-group'>";
+        echo $this->formElement($form->get('remember'));
+        echo " ";
+        echo $this->formLabel($form->get('remember'));
+        echo "</div>";
+
+        echo $this->formElement($form->get('submit'));
+        echo $this->form()->closeTag();
+
+        ?>
+        <hr>
+        <a href="<?php $this->url('training/verify',array('action' => 'forgot')) ?>">&raquo Quên mật khẩu</a>
+    </div>
+</div>

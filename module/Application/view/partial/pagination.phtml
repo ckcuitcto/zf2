@@ -1,0 +1,65 @@
+<?php if ($this->pageCount): ?>
+    <div>
+        <ul class="pagination">
+            <!-- Previous page link -->
+            <?php if (isset($this->previous)): ?>
+                <li>
+                    <?php
+                    $param=array('action'=>$this->params['action'],
+                        'page' => $this->previous
+                    );
+                    ?>
+                    <a href="<?php echo $this->url($this->route,$param); ?>">
+                        <<
+                    </a>
+                </li>
+            <?php else: ?>
+                <li class="disabled">
+                    <a href="#">
+                        <<
+                    </a>
+                </li>
+            <?php endif; ?>
+
+            <!-- Numbered page links -->
+            <?php foreach ($this->pagesInRange as $page): ?>
+                <?php if ($page != $this->current): ?>
+                    <li>
+                        <?php
+                        $param=array('action'=>$this->params['action'],
+                            'page' => $page
+                        );
+                        ?>
+                        <a href="<?php echo $this->url($this->route,$param);?>">
+                            <?php echo $page; ?>
+                        </a>
+                    </li>
+                <?php else: ?>
+                    <li class="active">
+                        <a href="#"><?php echo $page; ?></a>
+                    </li>
+                <?php endif; ?>
+            <?php endforeach; ?>
+
+            <!-- Next page link -->
+            <?php if (isset($this->next)): ?>
+                <li>
+                    <?php
+                    $param=array('action'=>$this->params['action'],
+                        'page' => $this->next
+                    );
+                    ?>
+                    <a href="<?php echo $this->url($this->route); ?>">
+                        >>
+                    </a>
+                </li>
+            <?php else: ?>
+                <li class="disabled">
+                    <a href="#">
+                        >>
+                    </a>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </div>
+<?php endif; ?>

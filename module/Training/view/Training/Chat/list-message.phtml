@@ -1,0 +1,10 @@
+<?php
+
+    foreach ($this->mess as $message){
+        echo "<div class='message'>";
+        echo "<span>( $message[stamp] )</span>";
+        echo "<span><b> $message[username] </b> : </span>";
+        echo "<span> $message[message] </span>";
+
+        echo "</div>";
+    }
