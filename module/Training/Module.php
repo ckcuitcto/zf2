@@ -9,7 +9,9 @@
 
 namespace Training;
 
+use Training\Form\FileForm;
 use Training\Form\VerifyForm;
+use Training\Model\FileTable;
 use Training\Model\MyAuth;
 use Training\Model\UserTable;
 use Zend\Authentication\AuthenticationService;
@@ -109,6 +111,20 @@ class Module implements AutoloaderProviderInterface
                 'ChatsTableGateWay' => function($sm){
                     $db = $sm->get('Zend\Db\Adapter\Adapter');
                     return new TableGateway('chats',$db);
+                },
+                'FileForm' => function ($sm) {
+                    $form = new FileForm('File_Form');
+                    return $form;
+                },
+                'FileTableGateWay' => function($sm){
+                    $db = $sm->get('Zend\Db\Adapter\Adapter');
+                    $result = new ResultSet();
+                    $result->setArrayObjectPrototype(new \Training\Model\File());
+                    return new TableGateway('files', $db, null, $result);
+                },
+                'FileTable' => function($sm){
+                    $tableGateWay = $sm->get('FileTableGateWay');
+                    return new FileTable($tableGateWay);
                 }
             )
         );

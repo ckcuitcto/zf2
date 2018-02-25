@@ -1,0 +1,25 @@
+<div class="row">
+    <div class="col-md-4">
+        <h3>Sửa tập tin</h3>
+        <p> </p>
+
+        <?php
+        $form = $this->form;
+        $form->prepare();
+
+        $form->setAttribute('action', $this->url('training/file', array('action' => 'edit','id' => $fileId)));
+
+        echo $this->form()->openTag($form);
+
+        echo "<div class='form-group'>";
+        echo $this->formLabel($form->get('label'));
+        echo $this->formElement($form->get('label'));
+        echo $this->formElementErrors($form->get('label'));
+        echo "</div>";
+
+        echo $this->formElement($form->get('submit'));
+        echo $this->form()->closeTag();
+
+        ?>
+    </div>
+</div>

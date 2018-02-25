@@ -5,6 +5,7 @@ return array(
             'Training\Controller\User' => 'Training\Controller\UserController',
             'Training\Controller\Verify' => 'Training\Controller\VerifyController',
             'Training\Controller\Chat' => 'Training\Controller\ChatController',
+            'Training\Controller\File' => 'Training\Controller\FileController',
         ),
     ),
     'router' => array(
@@ -81,6 +82,20 @@ return array(
                                 'action' => 'index'
                             ),
                         ),
+                    ),
+                    'file' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '/file[/:action[/:id]]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]+',
+                                'id' => '[0-9]+',
+                            ),
+                            'defaults' => array(
+                                'controller' => 'Training\Controller\File',
+                                'action' => 'index'
+                            ),
+                        ),
                     )
                 ),
             ),
@@ -99,5 +114,6 @@ return array(
         'username' => "hoasaigonn@gmail.com",
         'password' => "giahanthaiduc",
         'ssl' => 'ssl'
-    )
+    ),
+    'upload_location' => dirname(__DIR__)."/../../data/upload",
 );

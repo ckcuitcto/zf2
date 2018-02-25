@@ -1,0 +1,46 @@
+<div class="row">
+    <div class="col-md-7">
+        <h3>Danh sách tập tin đã tải</h3>
+
+        <?php
+            if($flash){
+                echo "<div class='alert alert-success '>";
+                foreach ($flash as $f){
+                    echo $f;
+                }
+                echo "</div>";
+            }
+
+        ?>
+        <table class="table table-bordered table-responsive table-striped table-hover">
+            <tr>
+                <td>STT</td>
+                <td>Tên tập tin</td>
+                <td>Tải về</td>
+                <td>Chia sẻ</td>
+                <td>Sửa tên tập tin</td>
+                <td>Xoá tập tin</td>
+            </tr>
+            <?php
+            if($files->count() > 0) {
+                foreach ($files as $k => $file) {
+                    echo "<tr>";
+                    echo " <td> " . ($k + 1) . "</td>";
+                    echo " <td> $file->label</td>";
+                    echo " <td> <a href='" . $this->url('training/file', array('action' => 'download', 'id' => $file->id)) . "'> Tải về</a></td>";
+                    echo " <td> <a href='" . $this->url('training/file', array('action' => 'share', 'id' => $file->id)) . "'> Chia sẻ</a></td>";
+                    echo " <td> <a href='" . $this->url('training/file', array('action' => 'edit', 'id' => $file->id)) . "'> Sửa</a></td>";
+                    echo " <td> <a href='" . $this->url('training/file', array('action' => 'delete', 'id' => $file->id)) . "' onclick='return confirm_delete();'> Xoá</a></td>";
+                    echo "</tr>";
+                }
+            }else{
+                echo "<tr>";
+                echo "<td colspan='6'> Chưa tải lên tập tin nào </td>";
+                echo "</tr>";
+            }
+            ?>
+        </table>
+        <hr>
+        <a href="<?php echo $this->url('training/file',array('action' => 'add')) ?>"> Thêm file</a>
+    </div>
+</div>
