@@ -1,0 +1,62 @@
+<div class="row">
+    <div class="col-md-4">
+        <h3>Chia sẻ tập tin <?= $fileData->label ?></h3>
+        <p>Vui lòng chọn người dùng muốn chia sẻ</p>
+        <?php
+            if($flash){
+                echo "<div class='alert alert-success '>";
+                foreach ($flash as $f){
+                    echo $f;
+                }
+                echo "</div>";
+            }
+
+        ?>
+        <?php
+        $form = $this->form;
+        $form->prepare();
+
+        $form->setAttribute('action', $this->url('training/file', array('action' => 'share','id' => $fileId)));
+
+        echo $this->form()->openTag($form);
+
+        echo "<div class='form-group'>";
+        echo $this->formLabel($form->get('user_id'));
+        echo $this->formElement($form->get('user_id'));
+        echo $this->formElementErrors($form->get('user_id'));
+        echo "</div>";
+
+        echo $this->formElement($form->get('submit'));
+        echo $this->form()->closeTag();
+
+        ?>
+    </div>
+
+    <div class="col-md-8">
+        <h3> Thành viên đã được chia sẻ tập tin</h3>
+        <table class="table table-bordered table-responsive table-striped table-hover">
+            <tr>
+                <td>STT</td>
+                <td>Thành viên</td>
+                <td>Thời gian</td>
+                <td>Xóa</td>
+            </tr>
+            <?php
+            if($shared->count() > 0) {
+                foreach ($shared as $k => $file) {
+                    echo "<tr>";
+                    echo " <td> " . ($k + 1) . "</td>";
+                    echo " <td> $file->username</td>";
+                    echo " <td> $file->stamp</td>";
+                    echo " <td> <a href='" . $this->url('training/file', array('action' => 'removeShare', 'id' => $file->id)) . "' onclick='return confirm_delete();'> Xoá</a></td>";
+                    echo "</tr>";
+                }
+            }else{
+                echo "<tr>";
+                echo "<td colspan='4'> Tập tin chưa được chia sẻ </td>";
+                echo "</tr>";
+            }
+            ?>
+        </table>
+    </div>
+</div>

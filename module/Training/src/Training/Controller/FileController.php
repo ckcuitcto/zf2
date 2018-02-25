@@ -159,4 +159,65 @@ class FileController extends AbstractActionController
         $response->setContent($data);
         return $response;
     }
+
+    public function shareAction(){
+        $id = $this->params()->fromRoute('id');
+        $sm = $this->getServiceLocator();
+
+        $view = $sm->get('Zend\View\Renderer\PhpRenderer');
+        $view->headScript()->appendFile($view->basePath()."/js/script.js",'text/javascript');
+
+        $form = $sm->get('ShareForm');
+        $fileTable = $sm->get('FileTable');
+        $userTable = $sm->get('UserTable');
+        $allUser = $userTable->fetchAll($id);
+        $fileData = $fileTable->getFileById($id);
+        $opUser = array();
+        $sharedUser = $fileTable->getUserSharedByFileId($id);
+        $flash = $this->flashMessenger()->getMessages();
+        foreach ($allUser as $user) {   
+            if($user->id != $fileData->user_id && !$fileTable->checkFileShared($id, $user->id)) {
+                $opUser[$user->id] = $user->username;
+            }
+        }
+        if(empty($opUser)){
+            $opUser[] = 'File đã được chia sẻ cho tất cả thành viên';
+            $form->get('submit')->setAttribute('disabled','disabled');
+        }
+        $form->get('user_id')->setValueOptions($opUser); // set value cho select
+        $request = $this->getRequest();
+        if($request->isPost()){
+            $dataInput = $request->getPost();
+            $form->setData($dataInput);
+            if($form->isValid()){
+                $dataInsert = $form->getData();
+                $fileTable->saveShare($id,$dataInsert['user_id']);
+                $this->flashMessenger()->addMessage('Chia sẻ file thành công');
+                return $this->redirect()->toRoute('training/file',array('action' => 'share','id' => $id));
+            }
+        }
+        return new ViewModel(array('form' => $form, 'fileId' => $id, 'fileData' => $fileData, 'shared' => $sharedUser, 'flash' => $flash));
+    }
+
+    public function removeShareAction(){
+        $id = $this->params()->fromRoute('id');
+        $sm = $this->getServiceLocator();
+
+        $fileTable = $sm->get('FileTable');
+        $shareInfo  =$fileTable->getSharingById($id);
+        $fileInfo = $fileTable->getFileById($shareInfo->file_id);
+        $userInfo = $this->getUserInfo();
+
+        if($userInfo['id'] == $fileInfo->user_id){
+            $fileTable->removeShareById($id);
+            $this->flashMessenger()->addMessage('Đã hủy chia sẻ tập tin!');
+            return $this->redirect()->toRoute('training/file',array('action' => 'share','id'=>$shareInfo->file_id));
+
+        }else{
+            $this->flashMessenger()->addMessage('Bạn không phải là tác giả của tập tin nên không thể xóa');
+            return $this->redirect()->toRoute('training/file',array('action' => 'index'));
+
+        }
+    
+    }
 }

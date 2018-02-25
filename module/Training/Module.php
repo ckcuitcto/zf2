@@ -10,6 +10,7 @@
 namespace Training;
 
 use Training\Form\FileForm;
+use Training\Form\ShareForm;
 use Training\Form\VerifyForm;
 use Training\Model\FileTable;
 use Training\Model\MyAuth;
@@ -116,15 +117,24 @@ class Module implements AutoloaderProviderInterface
                     $form = new FileForm('File_Form');
                     return $form;
                 },
+                'ShareForm' => function ($sm) {
+                    $form = new ShareForm('Share_Form');
+                    return $form;
+                },
                 'FileTableGateWay' => function($sm){
                     $db = $sm->get('Zend\Db\Adapter\Adapter');
                     $result = new ResultSet();
                     $result->setArrayObjectPrototype(new \Training\Model\File());
                     return new TableGateway('files', $db, null, $result);
                 },
+                'ShareTableGateWay' => function($sm){
+                    $db = $sm->get('Zend\Db\Adapter\Adapter');
+                    return new TableGateway('sharings', $db);
+                },
                 'FileTable' => function($sm){
                     $tableGateWay = $sm->get('FileTableGateWay');
-                    return new FileTable($tableGateWay);
+                    $shareTableGateWay = $sm->get('ShareTableGateWay');
+                    return new FileTable($tableGateWay,$shareTableGateWay);
                 }
             )
         );

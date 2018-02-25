@@ -73,4 +73,20 @@ class UserTable{
         $row = $rowSet->current();
         return $row;
     }
+//  select * from users WHERE users.id NOT IN (SELECT user_id from sharings where file_id = 10)
+    // public function getUsersNotYetSharedByFileId($fileId){
+    //     $select = new Select('users');
+    //     $select->where('users.id NOT IN ');
+
+    //     $select->from(array('u' => 'users'))  // base table
+    //     ->join(array('s' => 'sharings'),     // join table with alias
+    //     'u.id = s.user_id')->where('user_id = ?');         // join expression
+    //     $params = array($fileId);
+    //     $select->exec($params);
+    //     return $select;
+    // }
+
+    public function getUserSharedByFileId($fileId){
+        
+    }
 }
