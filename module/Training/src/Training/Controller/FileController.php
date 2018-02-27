@@ -47,8 +47,17 @@ class FileController extends AbstractActionController
         $userInfo = $this->getUserInfo();
         $files = $fileTable->getFileByUserId($userInfo['id']);
 
+        $allShared= $fileTable->getAllSharedByUserId($userInfo['id']);
+
+        $lastFile = $fileTable->getLastFileUpload($userInfo['id']);
+        $lastFileTmp = array();
+        foreach ($lastFile as $file){
+            $fileTmp = array($file,'shared' => $fileTable->checkFileShared($file->id,$userInfo['id']));
+            $lastFileTmp[] = $fileTmp;
+        }
+        $lastFile = $lastFileTmp;
         $flash = $this->flashMessenger()->getMessages();
-        return new ViewModel(array('files' => $files,'flash' => $flash));
+        return new ViewModel(array('files' => $files,'flash' => $flash,'allShared' => $allShared,'lastFile' => $lastFile));
     }
 
 
@@ -110,6 +119,10 @@ class FileController extends AbstractActionController
         $form = $sm->get('FileForm');
         $form->bind($data);
         $request = $this->getRequest();
+
+        $userInfo = $this->getUserInfo();
+        $this->isOwner($userInfo['id'],$data->user_id);
+
         if($request->isPost()){
             $dataInput = $request->getPost();
             $form->setValidationGroup('label');
@@ -128,7 +141,12 @@ class FileController extends AbstractActionController
         $id = $this->params()->fromRoute('id');
         $sm = $this->getServiceLocator();
         $fileTable = $sm->get('FileTable');
-        $fileName = $fileTable->getFileById($id)->filename;
+        $fileData = $fileTable->getFileById($id);
+        $fileName = $fileData->filename;
+
+        $userInfo = $this->getUserInfo();
+        $this->isOwner($userInfo['id'],$fileData->user_id);
+
         $path = $this->getFileLocation()."/$fileName";
         $fileTable->deleteFileById($id);
         if(file_exists($path)){
@@ -143,21 +161,28 @@ class FileController extends AbstractActionController
         $sm = $this->getServiceLocator();
         $fileTable = $sm->get('FileTable');
         $fileData = $fileTable->getFileById($id);
-        $path = $this->getFileLocation()."/$fileData->filename";
-        $data = file_get_contents($path);
-        $response = $this->getEvent()->getResponse();
-        $response->getHeaders()->addHeaders(
-            array(
-                'Content-Type' => 'application/octet-stream',
-                'Content-Disposition' => 'attachment; filename="'.$fileData->filename.'"',
+
+        $userInfo = $this->getUserInfo();
+        if($fileTable->checkFileShared($id,$userInfo['id'])){
+            $path = $this->getFileLocation()."/$fileData->filename";
+            $data = file_get_contents($path);
+            $response = $this->getEvent()->getResponse();
+            $response->getHeaders()->addHeaders(
+                array(
+                    'Content-Type' => 'application/octet-stream',
+                    'Content-Disposition' => 'attachment; filename="'.$fileData->filename.'"',
 //                'Content-Length' => $stats['size'],
-                'Expires' => '@0', // @0, because zf2 parses date as string to \DateTime() object
-                'Cache-Control' => 'must-revalidate',
-                'Pragma' => 'public'
-            )
-        );
-        $response->setContent($data);
-        return $response;
+                    'Expires' => '@0', // @0, because zf2 parses date as string to \DateTime() object
+                    'Cache-Control' => 'must-revalidate',
+                    'Pragma' => 'public'
+                )
+            );
+            $response->setContent($data);
+            return $response;
+        }else{
+            $this->flashMessenger()->addMessage('Bạn không thể tải tập tin vì tập tin chưa được chia sẻ cho bạn!');
+            return $this->redirect()->toRoute('training/file',array('action' => 'index'));
+        }
     }
 
     public function shareAction(){
@@ -173,6 +198,10 @@ class FileController extends AbstractActionController
         $allUser = $userTable->fetchAll($id);
         $fileData = $fileTable->getFileById($id);
         $opUser = array();
+
+        $userInfo = $this->getUserInfo();
+        $this->isOwner($userInfo['id'],$fileData->user_id);
+
         $sharedUser = $fileTable->getUserSharedByFileId($id);
         $flash = $this->flashMessenger()->getMessages();
         foreach ($allUser as $user) {   
@@ -206,18 +235,34 @@ class FileController extends AbstractActionController
         $fileTable = $sm->get('FileTable');
         $shareInfo  =$fileTable->getSharingById($id);
         $fileInfo = $fileTable->getFileById($shareInfo->file_id);
+
         $userInfo = $this->getUserInfo();
+        $this->isOwner($userInfo['id'],$fileInfo->user_id);
 
-        if($userInfo['id'] == $fileInfo->user_id){
-            $fileTable->removeShareById($id);
-            $this->flashMessenger()->addMessage('Đã hủy chia sẻ tập tin!');
-            return $this->redirect()->toRoute('training/file',array('action' => 'share','id'=>$shareInfo->file_id));
+        $fileTable->removeShareById($id);
+        $this->flashMessenger()->addMessage('Đã hủy chia sẻ tập tin!');
+        return $this->redirect()->toRoute('training/file',array('action' => 'share','id'=>$shareInfo->file_id));
 
-        }else{
-            $this->flashMessenger()->addMessage('Bạn không phải là tác giả của tập tin nên không thể xóa');
+    }
+
+    public function isOwner($userId,$ownerId){
+        if($userId != $ownerId){
+            $this->flashMessenger()->addMessage('Bạn không phải là tác giả của tập tin nên không thực hiện được chức năng này');
             return $this->redirect()->toRoute('training/file',array('action' => 'index'));
-
+        }else{
+            return true;
         }
-    
+    }
+
+    public function requestShareAction(){
+        $fileId = $this->params()->fromRoute('id');
+        $sm = $this->getServiceLocator();
+
+        $fileTable = $sm->get('FileTable');
+        $userTable = $sm->get('UserTable');
+        $fileInfo = $fileTable->getFileById($fileId,'withUser');
+        $ownerOfFile = $userTable->getUserById($fileInfo->user_id);
+        var_dump($fileInfo);
+        return false;
     }
 }

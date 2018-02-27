@@ -62,7 +62,7 @@ return array(
                             'constraints' => array(
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]+',
                                 'name' => '[a-zA-Z0-9_-]+',
-                                'code' => '[a-zA-Z0-9_-]+',
+                                'code' => '[a-zA-Z0-9]+',
                             ),
                             'defaults' => array(
                                 'controller' => 'Training\Controller\Verify',
@@ -115,5 +115,10 @@ return array(
         'password' => "giahanthaiduc",
         'ssl' => 'ssl'
     ),
+    'recaptcha' => array(
+        'public' => '6Lf65EcUAAAAAHfsKWZj72FJFVflgebWAhZVkJNk',
+        'private' => '6Lf65EcUAAAAAExw1XDcvmeeTrXrRTCIgIQdof2U',
+    ),
     'upload_location' => dirname(__DIR__)."/../../data/upload",
+
 );

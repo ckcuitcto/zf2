@@ -25,6 +25,11 @@
         echo $this->formElementErrors($form->get('email'));
         echo "</div>";
 
+        echo $this->captcha->getHTML();
+
+        // captcha v2
+//        echo "<div class=\"g-recaptcha\" data-sitekey=\"6LeJdkgUAAAAAFraQGv5Im-t4ialBjkSdUE4sWqm\"></div>";
+
         echo $this->formElement($form->get('submit'));
         echo $this->form()->closeTag();
 
