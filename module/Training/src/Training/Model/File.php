@@ -15,6 +15,8 @@ class File
     public $label;
     public $filename;
     public $user_id;
+    public $username;
+    public $email;
 
     public function exchangeArray($data){
         if(isset($data['id'])){
@@ -30,6 +32,14 @@ class File
         }
         if(isset($data['user_id'])){
             $this->user_id = $data['user_id'];
+        }
+
+        if(isset($data['username'])){
+            $this->username = $data['username'];
+        }
+
+        if(isset($data['email'])){
+            $this->email = $data['email'];
         }
     }
 

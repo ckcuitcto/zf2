@@ -1,0 +1,45 @@
+<div class="row">
+	<div class="col-md-7">
+		<h3>Lịch sử mua hàng</h3>
+		 <?php
+        if(count($flash)){
+            echo "<div class='alert alert-success'>";
+            foreach ($flash as $mess){
+                echo $mess;
+            }
+            echo "</div>";
+        }
+        ?>
+        
+		<table class="table" width="50%">
+			<caption>Lịch sử mua hàng</caption>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Thời gian mua hàng</th>
+					<th>Tổng tiền</th>
+					<th>Xem chi tiết</th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php
+				if(count($this->allOrder))
+				{
+					foreach($this->allOrder as $order){
+					echo "<tr>";
+					echo "<td> $order->id </td>";
+					echo "<td> $order->stamp </td>";
+					echo "<td> $order->total </td>";
+					echo "<td> <a href='".$this->url('training/book',array('action' => 'orderDetail','id'=> $order->id )) ."'>Chi tiết </a></td>";
+					echo "</tr>";
+					}
+				}else{
+					echo "<tr>";
+					echo "<td colspan='4' align='center'> Bạn chưa mua sản phẩm nào. Hãy mua hàng <a href='".$this->url('training/book')."'> </a> </td>";
+					echo "</tr>";
+				}
+			?>
+			</tbody>
+		</table>
+	 </div>
+</div>

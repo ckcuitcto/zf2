@@ -1,0 +1,56 @@
+<div class="row">
+    <div class="col-md-6">
+        <h3>Danh sách thành viên</h3>
+        <?php
+            if(count($flash)){
+                echo "<div class='alert alert-success'>";
+                foreach ($flash as $mess){
+                    echo $mess;
+                }
+                echo "</div>";
+            }
+        ?>
+        <table class="table table-bordered table-striped">
+            <tr>
+                <td>STT</td>
+                <td>User name</td>
+                <td>Email</td>
+                <td>Level</td>
+                <td>Edit</td>
+                <td>Delete</td>
+            </tr>
+            <?php
+                foreach ($this->data as $k => $user){
+                    echo "<tr>";
+                    echo "<td>$k</td>";
+                    echo "<td>$user->username</td>";
+                    echo "<td>$user->email</td>";
+                    if(($user->level==1)){
+                        echo "<td>Member</td>";
+                    }else{
+                        echo "<td>Administrator</td>";
+                    }
+                    echo "<td><a href='".$this->url('training/member',array('action'=>'edit','id'=>$user->id))."'>Edit</a></td>";
+                    echo "<td><a href='".$this->url('training/member',array('action'=>'delete','id'=>$user->id))."' onClick='return confirm_delete();'>Delete</a></td>";
+                    echo "</tr>";
+                }
+            ?>
+        </table>
+        <?php
+        echo $this->paginationControl(
+            $this->paging,
+            'sliding',
+            array('partial/pagination.phtml','training'),
+            array(
+                'route' => 'training/member',
+                'params' => array('action' => 'index2')
+            )
+        );
+        ?>
+        <hr>
+        <a href="<?php echo $this->url('training/member',array('action' => 'add')); ?>" >
+            Thêm thành viên
+        </a>
+    </div>
+</div>
+<?php

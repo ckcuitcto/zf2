@@ -9,11 +9,14 @@
 
 namespace Training;
 
+use QHO\Mail\MailManager;
 use Training\Form\FileForm;
 use Training\Form\ShareForm;
 use Training\Form\VerifyForm;
+use Training\Model\BookTable;
 use Training\Model\FileTable;
 use Training\Model\MyAuth;
+use Training\Model\OrderTable;
 use Training\Model\UserTable;
 use Zend\Authentication\AuthenticationService;
 use Zend\Db\ResultSet\ResultSet;
@@ -42,7 +45,10 @@ class Module implements AutoloaderProviderInterface
 
     public function getConfig()
     {
-        return include __DIR__ . '/config/module.config.php';
+        return array_merge(
+            include __DIR__ . '/config/module.config.php',
+            include __DIR__ . '/config/router.config.php'
+        );
     }
 
     public function onBootstrap(MvcEvent $e)
@@ -64,8 +70,13 @@ class Module implements AutoloaderProviderInterface
                 $auth = $e->getApplication()->getServiceManager()->get('AuthService');
                 $viewModel = $e->getApplication()->getMvcEvent()->getViewModel();
                 $userLogin = $auth->getStorage()->read();
+//                echo "<pre>";
+//                print_r($userLogin);
+//                echo "</pre>";
+
                 $viewModel->username_layout = $userLogin['username'];
                 //ktra ng dung dang nhap
+                // nếu chưa thì đưa về trnag login
                 if (!$auth->hasIdentity()) {
                     $controller->plugin('redirect')->toRoute('training/verify', array('action' => 'login'));
                 }
@@ -73,6 +84,30 @@ class Module implements AutoloaderProviderInterface
         });
     }
 
+    public function getFormElementConfig(){
+        return array(
+            'factories' => array(
+                'UserForm' => function ($sm) {
+                    $form = new \Training\Form\UserForm('User_Form');
+                    $user = new \Training\Model\User();
+                    $form->setInputFilter($user->getInputFilter());
+                    return $form;
+                },
+                'VerifyForm' => function ($sm) {
+                    $form = new VerifyForm('Login_Form');
+                    return $form;
+                },
+                'FileForm' => function ($sm) {
+                    $form = new FileForm('File_Form');
+                    return $form;
+                },
+                'ShareForm' => function ($sm) {
+                    $form = new ShareForm('Share_Form');
+                    return $form;
+                },
+            )
+        );
+    }
     public function getServiceConfig()
     {
         return array(
@@ -87,16 +122,6 @@ class Module implements AutoloaderProviderInterface
                     $tableGateWay = $sm->get('UserTableGateWay');
                     $userTable = new UserTable($tableGateWay);
                     return $userTable;
-                },
-                'UserForm' => function ($sm) {
-                    $form = new \Training\Form\UserForm('User_Form');
-                    $user = new \Training\Model\User();
-                    $form->setInputFilter($user->getInputFilter());
-                    return $form;
-                },
-                'VerifyForm' => function ($sm) {
-                    $form = new VerifyForm('Login_Form');
-                    return $form;
                 },
                 'AuthService' => function ($sm) {
                     $adapter = $sm->get('Zend\Db\Adapter\Adapter');
@@ -113,14 +138,6 @@ class Module implements AutoloaderProviderInterface
                     $db = $sm->get('Zend\Db\Adapter\Adapter');
                     return new TableGateway('chats',$db);
                 },
-                'FileForm' => function ($sm) {
-                    $form = new FileForm('File_Form');
-                    return $form;
-                },
-                'ShareForm' => function ($sm) {
-                    $form = new ShareForm('Share_Form');
-                    return $form;
-                },
                 'FileTableGateWay' => function($sm){
                     $db = $sm->get('Zend\Db\Adapter\Adapter');
                     $result = new ResultSet();
@@ -135,6 +152,36 @@ class Module implements AutoloaderProviderInterface
                     $tableGateWay = $sm->get('FileTableGateWay');
                     $shareTableGateWay = $sm->get('ShareTableGateWay');
                     return new FileTable($tableGateWay,$shareTableGateWay);
+                },
+                'MailManager' => function($sm){
+                    $mail = new MailManager($sm);
+                    return $mail;
+                },
+                    'DataPaging' => function($sm){
+                    $paging = new \QHO\Paginator\Paginator();
+                    return $paging;
+                },
+                'BookTable' => function($sm){
+                    $tableGateWay = $sm->get('BookTableGateWay');
+                    $bookTable = new BookTable($tableGateWay);
+                    return $bookTable;
+                },
+                'BookTableGateWay' => function($sm){
+                    $db = $sm->get('Zend\Db\Adapter\Adapter');
+                    $result = new ResultSet();
+                    $result->setArrayObjectPrototype(new \Training\Model\Book());
+                    return new TableGateway('books', $db, null, $result);
+                },
+                'OrderTable' => function($sm){
+                    $tableGateWay = $sm->get('OrderTableGateWay');
+                    $orderTable = new OrderTable($tableGateWay);
+                    return $orderTable;
+                },
+                'OrderTableGateWay' => function($sm){
+                    $db = $sm->get('Zend\Db\Adapter\Adapter');
+                    $result = new ResultSet();
+                    $result->setArrayObjectPrototype(new \Training\Model\Order());
+                    return new TableGateway('orders', $db, null, $result);
                 }
             )
         );

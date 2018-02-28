@@ -24,34 +24,47 @@ class FileTable
         $this->tableGateWay = $tableGateway;
     }
 
-    public function saveFile(File $file){
+    public function saveFile(File $file)
+    {
         $data = array(
             'label' => $file->label,
             'filename' => $file->filename,
             'user_id' => $file->user_id,
         );
-        if(empty($file->id)){
+        if (empty($file->id)) {
             $this->tableGateWay->insert($data);
-        }else{
-            $this->tableGateWay->update($data,array('id' => $file->id));
+        } else {
+            $this->tableGateWay->update($data, array('id' => $file->id));
         }
     }
 
-    public function getFileByUserId($userId){
+    public function getFileByUserId($userId)
+    {
         return $this->tableGateWay->select(array('user_id' => $userId));
 
     }
 
-    public function getFileById($id){
-        $result = $this->tableGateWay->select(array('id' => $id));
+    public function getFileById($id, $option = null)
+    {
+        if($option == 'withUser'){
+            $result = $this->tableGateWay->select(function(Select $select) use ($id){
+                $select->columns(array('id','label','user_id'))
+                        ->where(array('files.id' => $id))
+                        ->join('users', 'files.user_id = users.id',array('username','email'));
+            });
+        }else{
+            $result = $this->tableGateWay->select(array('id' => $id));
+        }
         return $result->current();
     }
 
-    public function deleteFileById($id){
+    public function deleteFileById($id)
+    {
         return $this->tableGateWay->delete(array('id' => $id));
     }
 
-    public function saveShare($fileId, $userId){
+    public function saveShare($fileId, $userId)
+    {
         $data = array(
             'file_id' => $fileId,
             'user_id' => $userId,
@@ -59,24 +72,28 @@ class FileTable
         $this->shareTableGateWay->insert($data);
     }
 
-    public function checkFileShared($fileId , $userId){
-        $rowSet = $this->shareTableGateWay->select(array('file_id' => $fileId,'user_id' => $userId));
-        if($rowSet->current()){
+    public function checkFileShared($fileId, $userId)
+    {
+        $rowSet = $this->shareTableGateWay->select(array('file_id' => $fileId, 'user_id' => $userId));
+        if ($rowSet->current()) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
-    public function getUserSharedByFileId($fileId){
-        $row = $this->shareTableGateWay->select(function(Select $select) use ($fileId){
-            $select->columns(array('file_id','id','stamp'))
-                    ->where(array('sharings.file_id' => $fileId))
-                    ->join('users','sharings.user_id = users.id',array('username'));
+
+    public function getUserSharedByFileId($fileId)
+    {
+        $row = $this->shareTableGateWay->select(function (Select $select) use ($fileId) {
+            $select->columns(array('file_id', 'id', 'stamp'))
+                ->where(array('sharings.file_id' => $fileId))
+                ->join('users', 'sharings.user_id = users.id', array('username'));
         });
         return $row;
     }
 
-    public function removeShareById($id){
+    public function removeShareById($id)
+    {
         return $this->shareTableGateWay->delete(array('id' => $id));
     }
 
@@ -89,8 +106,33 @@ class FileTable
     //     return $row;
     // }
 
-    public function getSharingById($id){
+    public function getSharingById($id)
+    {
         $result = $this->shareTableGateWay->select(array('id' => $id));
         return $result->current();
+    }
+
+    public function getAllSharedByUserId($userId)
+    {
+        $result = $this->shareTableGateWay->select(function (Select $select) use ($userId) {
+            $select->columns(array('stamp'))
+                ->where(array('sharings.user_id' => $userId))
+                ->join('files', 'sharings.file_id = files.id', array('id', 'label'))
+                ->join('users', 'files.user_id = users.id', array('username'));
+        });
+        return $result;
+    }
+
+    public function getLastFileUpload($userId, $number = 10)
+    {
+        $result = $this->tableGateWay->select(function(Select $select) use ($userId,$number){
+            $select->columns(array('id','label','user_id'))
+                    ->where->notEqualTo('user_id',$userId);
+            $select->order('id desc')->limit($number);
+            $select->join('users', 'files.user_id = users.id', array('username'));
+        });
+        // sử dụng resultSet để ép về kiểu file, nên khi xuất ra kiểu file thì k hiểu username là gì
+        // muốn nó hiểu thì phải vào File model để thêm vào cột username
+        return $result;
     }
 }

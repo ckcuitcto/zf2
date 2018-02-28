@@ -22,6 +22,19 @@ class UserTable{
         $this->tableGateWay = $tableGateway;
     }
 
+    public function countAllUser(){
+        return $this->tableGateWay->select()->count();
+    }
+
+    public function listUserWithPaging(array $data){
+        $row = $this->tableGateWay->select(function(Select $select) use ($data){
+            $select->columns(array('id','username','level'))
+                ->limit($data['ItemCountPerPage'])
+                ->offset(($data['CurrentPageNumber'] - 1)*$data['ItemCountPerPage']);
+        });
+        return $row;
+    }
+
     public function fetchAll($paging = false){
         if($paging == true) {
             $select = new Select('users');
@@ -72,6 +85,12 @@ class UserTable{
         $rowSet = $this->tableGateWay->select(array('email' => $email));
         $row = $rowSet->current();
         return $row;
+    }
+
+    public function resetPassword($user,$pass){
+        $data = array();
+        $data['password'] = $pass;
+        $this->tableGateWay->update($data,array('username'=> $user));
     }
 //  select * from users WHERE users.id NOT IN (SELECT user_id from sharings where file_id = 10)
     // public function getUsersNotYetSharedByFileId($fileId){

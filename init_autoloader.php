@@ -19,6 +19,9 @@
 // Composer autoloading
 if (file_exists('vendor/autoload.php')) {
     $loader = include 'vendor/autoload.php';
+
+    // cấu hình thủ công
+//    $loader->add('QHO\\',__DIR__.'/vendor/DucLibrary/Library');
 }
 
 if (class_exists('Zend\Loader\AutoloaderFactory')) {

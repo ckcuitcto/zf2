@@ -1,0 +1,55 @@
+<div class="row">
+    <div class="col-md-7">
+        <h3>Xác nhận hoàn tất thanh toán</h3>
+        <p>Thông tin hoá đơn</p>
+
+        <table width="50%" border="1">
+            <tr>
+                <td>
+                    <b>Mã hoá đơn</b> MHD-<?php echo $dataPayment['orderId']; ?>
+                    <b>Tình trạng</b> : Đã thanh toán
+                    <b>Ngày thanh toán</b> <?php echo $dataPayment['time'] ?>
+                    <b>Hình thức thanh toán</b> Paypal
+                 </td>
+            </tr>
+        </table>
+        <hr>
+        <table width="50%" border="1">
+            <tr>
+                <td> <h4>Thông tin giao hàng</h4></td>
+            </tr>
+            <tr>
+                <td>
+                    <?php echo $dataPayment['ship_name']; ?> <br>
+                    <?php echo $dataPayment['ship_address']; ?> <br>
+                    Thời gian giao hàng từ 5-7 ngày kể từ ngày đặt hàng. k tính t7 cn
+                </td>
+            </tr>
+        </table>
+        <h4>Chi tiết sản phẩm</h4>
+        <table width="80%" border="1">
+            <tr>
+                <th>Tên sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Giá tiền</th>
+                <th>Thành tiền</th>
+            </tr>
+            <?php
+            foreach ($dataPayment['detail'] as $id => $item){
+                    echo "<tr>";
+                    echo "<td> $item[name] </td>";
+                    echo "<td> $item[qty] </td>";
+                    echo "<td> $item[price] </td>";
+                    echo "<td> ".($item['price']*$item['qty'])."</td>";
+                    echo "</tr>";
+                }
+            ?>
+            <tr>
+                <td colspan="3">Tổng tiền</td>
+                <td> <?php echo $dataPayment['total']; ?>$</td>
+            </tr>
+        </table>
+        <hr>
+        <a href="javascript:void(0)" onclick="window.print();"> In hoá đơn xác nhận</a>
+    </div>
+</div>
