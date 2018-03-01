@@ -109,6 +109,19 @@ return array(
                                 'action' => 'index'
                             ),
                         ),
+                    ),
+                    'acl' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '/acl[/:action]',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]+',
+                            ),
+                            'defaults' => array(
+                                'controller' => 'Training\Controller\Acl',
+                                'action' => 'index'
+                            ),
+                        ),
                     )
                 ),
             ),

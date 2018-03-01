@@ -110,7 +110,7 @@ class VerifyController extends AbstractActionController
                     */
                     // ép kiểu về dạng mảng
                     //
-                    $storage = (array) $this->getAuthService()->getAdapter()->getResultRowObject(array('id','username','level'));
+                    $storage = (array) $this->getAuthService()->getAdapter()->getResultRowObject(array('id','username','level','access'));
                     $this->getAuthService()->getStorage()->write($storage);
                     return $this->redirect()->toRoute('training/member');
                 } else {
@@ -126,7 +126,6 @@ class VerifyController extends AbstractActionController
         $this->getAuthService()->clearIdentity();
         $this->getMyAuth()->forgetMe();
         $this->flashMessenger()->addMessage('Đăng xuất thành công');
-
         return $this->redirect()->toRoute('training/verify', array('action', 'login'));
     }
 
@@ -139,11 +138,12 @@ class VerifyController extends AbstractActionController
 //        $view->headScript()->appendFile("https://www.google.com/recaptcha/api.js", 'text/javascript');
 //        $captcha = new \ZendService\ReCaptcha\ReCaptcha('6LeJdkgUAAAAAFraQGv5Im-t4ialBjkSdUE4sWqm', '6LeJdkgUAAAAAJTeyvU9y1XaCEC5SarkZTa0OQDD');
 
+
         $form = $sm->get('FormElementManager')->get('VerifyForm');
         $request = $this->getRequest();
         $error = "";
         $mess = "";
-
+        $config = $sm->get('config');
         $captcha = $this->getReCaptcha();
 
         if ($request->isPost()) {
@@ -160,28 +160,19 @@ class VerifyController extends AbstractActionController
 
                 if ($email) {
                     $activeCode = md5($email->username . "ThaiDuc" . $email->password);
-                    $link = "http://localhost:8080". $this->url()->fromRoute('training/verify', array('action' => 'active')) . "/getinfo/$email->username/$activeCode";
 
-                    $mail = $sm->get('MailManager');
-                    // lấy message ở trong mailmessage ra.
-                    $mess = array(
-                        'username' => $email->username,
-                        'link' => $link
-                    );
-                    $message = new MailMessage();
-                    $message->forgotPasswordMessage($mess);
+                    //wamp
+                    //xampp
+                    $link = $this->url()->fromRoute('training/verify', array('action' => 'active')) . "/getinfo/$email->username/$activeCode";
+                    $mail = new Mail\Message();
+                    $mail->setFrom('hoasaigonn@gmail.com', 'Thai Duc Zend2 ');
+                    $mail->addTo($email->email, $email->name);
+                    $mail->setSubject("Đổi mật khẩu zend 2");
+                    $message = "Chào bạn $email->username,
+                    Nhâp vào lin kđể phục hồi tài khoản http://localhost:8080/zend2/public$link";
+                    $mail->setBody($message);
 
-                    // dữ liệu email
-                    $dataMailer = array(
-                        'mailFrom' => 'hoasaigonn@gmail.com',
-                        'nameFrom' => 'Thai Duc Test mail library',
-                        'emailTo' => $email->email,
-                        'emailName' => $email->name,
-                        'subject' => 'Đổi mật khẩu zend 2',
-                        'message' => $message->getMessageInfo(),
-                    );
-                    $mail->setDataMailer($dataMailer);
-                    $mail->getSmtpTransport()->send($mail->getDataMailer()) ; // gửi
+                    $this->getSmtpTransport()->send($mail);
 
                     $mess = "Chúng tôi đã gửi email chứa liên kết phục hồi mật khẩu tới địa chỉ $dataInput[email]";
                 } else {
@@ -202,13 +193,12 @@ class VerifyController extends AbstractActionController
         $sm = $this->getServiceLocator();
         $userTable = $sm->get('UserTable');
         $row = $userTable->getUserByUsername($name);
-        if($row){
+        if ($row) {
             $activeCode = md5($row->username . "ThaiDuc" . $row->password);
-            if($code == $activeCode){
-                $newPass = substr(str_shuffle('0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM'),0,8);
-                $userTable->resetPassword($name,md5($newPass));
-                $link = "http://localhost:8080".$this->url()->fromRoute('training/verify', array('action'=>'login'));
-
+            if ($code == $activeCode) {
+                $newPass = substr(str_shuffle('0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM'), 0, 8);
+                $userTable->resetPassword($name, md5($newPass));
+                $link = "http://localhost:8080" . $this->url()->fromRoute('training/verify', array('action' => 'login'));
 
                 $mail = $sm->get('MailManager');
                 $mess = array(
@@ -227,10 +217,10 @@ class VerifyController extends AbstractActionController
                     'message' => $message->getMessageInfo(),
                 );
                 $mail->setDataMailer($dataMailer);
-                $mail->getSmtpTransport()->send($mail->getDataMailer()) ; // gửi
+                $mail->getSmtpTransport()->send($mail->getDataMailer()); // gửi
 
                 $this->flashMessenger()->addMessage('Mật khẩu mới của bạn đã đc gửi tới Email');
-                return $this->redirect()->toRoute('training/verify',array('action' => 'login'));
+                return $this->redirect()->toRoute('training/verify', array('action' => 'login'));
             }
         }
         $form = $sm->get('FormElementManager')->get('VerifyForm');
@@ -241,6 +231,11 @@ class VerifyController extends AbstractActionController
         ));
         $model->setTemplate('training/verify/forgot');
         return $model;
+    }
+
+    public function deniedAction(){
+
+        return new ViewModel();
     }
 
 }

@@ -227,7 +227,9 @@ class FileController extends AbstractActionController
         $userInfo = $this->getUserInfo();
         $this->isOwner($userInfo['id'],$fileData->user_id);
 
+
         // lấy các usser đã đc chia sẻ
+
         $sharedUser = $fileTable->getUserSharedByFileId($id);
 
         $flash = $this->flashMessenger()->getMessages();
@@ -310,17 +312,18 @@ class FileController extends AbstractActionController
         }
     }
 
-    public function requestShareAction(){
+    public function requestShareAction()
+    {
         $fileId = $this->params()->fromRoute('id');
         $sm = $this->getServiceLocator();
         $userInfo = $this->getUserInfo();
 
         $fileTable = $sm->get('FileTable');
         $userTable = $sm->get('UserTable');
-        $fileInfo = $fileTable->getFileById($fileId,'withUser');
-        if($fileInfo){
-            $token = md5('ThaiDuc'.$userInfo['id']);
-            $link = 'http://localhost:8080'.$this->url()->fromRoute('training/file', array('action'=>'share', 'id' => $fileId,'token' => $userInfo['id'].'-'.$token));
+        $fileInfo = $fileTable->getFileById($fileId, 'withUser');
+        if ($fileInfo) {
+            $token = md5('ThaiDuc' . $userInfo['id']);
+            $link = 'http://localhost:8080' . $this->url()->fromRoute('training/file', array('action' => 'share', 'id' => $fileId, 'token' => $userInfo['id'] . '-' . $token));
 
             $mail = $sm->get('MailManager');
             $mess = array(
@@ -340,15 +343,13 @@ class FileController extends AbstractActionController
                 'message' => $message->getMessageInfo(),
             );
             $mail->setDataMailer($dataMailer);
-            $mail->getSmtpTransport()->send($mail->getDataMailer()) ; // gửi
+            $mail->getSmtpTransport()->send($mail->getDataMailer()); // gửi
 
             $this->flashMessenger()->addMessage("Gửi yêu cầu thành công đến $fileInfo->username");
-        }else{
+        } else {
             $this->flashMessenger()->addMessage("Liên kết không hợp lệ");
-
         }
-
         return $this->redirect()->toRoute('training/file');
-
     }
+
 }

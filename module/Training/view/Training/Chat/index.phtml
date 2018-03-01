@@ -1,5 +1,8 @@
 <?php
 $this->headScript()->appendScript('
+
+    $("div.alert-success").delay(2000).slideUp();
+
     $(document).ready(function(){
         $("#refresh").click(function(e){
             document.getElementById("messageListFrame").contentWindow.location.reload(true);

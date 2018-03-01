@@ -21,6 +21,7 @@ class User implements InputFilterAwareInterface
     public $email;
     public $level;
     public $username;
+    public $access;
 
     protected $inputFilter;
 
@@ -43,6 +44,9 @@ class User implements InputFilterAwareInterface
         }
         if (isset($data['username'])) {
             $this->username = $data['username'];
+        }
+        if (isset($data['access'])) {
+            $this->access = $data['access'];
         }
     }
 

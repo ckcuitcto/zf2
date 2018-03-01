@@ -156,4 +156,39 @@ class UserController extends AbstractActionController
         return $this->redirect()->toRoute('training/member');
     }
 
+    public function accessAction(){
+        $userId = $this->params()->fromRoute('id');
+        $sm = $this->getServiceLocator();
+        $form = $sm->get('FormElementManager')->get('AccessForm');
+        $userTable = $sm->get('UserTable');
+        $userInfo = $userTable->getUserById($userId);
+        $serialize = new \Zend\Serializer\Adapter\PhpSerialize();
+        if($userInfo->access != ""){
+            // nghĩa là đã đc phân quyền
+            $access = $serialize->unserialize($userInfo->access);
+            foreach ($access['training'] as $key => $value){
+                $form->get($key."controller")->setValue($key);
+                $form->get($key)->setValue($value);
+            }
+        }
+        $request = $this->getRequest();
+        if($request->isPost()){
+            $data =$request->getPost()->toArray();
+            $access = array();
+            foreach ($data as $key => $value){
+                if(!is_array($value)){
+                    unset($data[$key]);
+                }
+            }
+            $access['training'] = $data;
+            $strAccess = $serialize->serialize($access);
+
+            $userTable->saveAccess($strAccess,$userId);
+            $userInfo = $userTable->getUserById($userId);
+            $this->flashMessenger()->addMessage("Phân quyền thành công cho thành viên $userInfo->username !");
+            return $this->redirect()->toRoute('training/member');
+        }
+        return new ViewModel(array('form' => $form,'userId' => $userId));
+    }
+
 }

@@ -7,6 +7,7 @@ return array(
             'Training\Controller\Chat' => 'Training\Controller\ChatController',
             'Training\Controller\File' => 'Training\Controller\FileController',
             'Training\Controller\Book' => 'Training\Controller\BookController',
+            'Training\Controller\Acl' => 'Training\Controller\AclController',
         ),
     ),
     'view_manager' => array(

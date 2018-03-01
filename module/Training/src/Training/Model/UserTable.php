@@ -105,7 +105,8 @@ class UserTable{
     //     return $select;
     // }
 
-    public function getUserSharedByFileId($fileId){
-        
+    public function saveAccess($access, $userId){
+        $data['access'] = $access;
+        $this->tableGateWay->update($data,array('id'=>$userId));
     }
 }

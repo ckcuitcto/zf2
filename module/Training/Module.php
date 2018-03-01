@@ -10,6 +10,7 @@
 namespace Training;
 
 use QHO\Mail\MailManager;
+use Training\Form\AccessForm;
 use Training\Form\FileForm;
 use Training\Form\ShareForm;
 use Training\Form\VerifyForm;
@@ -64,24 +65,32 @@ class Module implements AutoloaderProviderInterface
             $controller = $e->getTarget(); // lam viec voi controller
             // lay ra controller hien tai, kiem tra xem no co lien quan j voi verifycontroller, neu có nghĩa là
             // ng sử dụng đang đứng trong các action thược verìy controller
-            if ($controller instanceof Controller\VerifyController) {
+
+            $route = $e->getRouteMatch();
+            $actionName = $route->getParam('action');
+            if ($controller instanceof Controller\VerifyController AND $actionName != 'logout') {
                 $controller->layout('layout/auth');
             } else {
-                $auth = $e->getApplication()->getServiceManager()->get('AuthService');
+                $sm = $e->getApplication()->getServiceManager();
+                $auth = $sm->get('AuthService');
                 $viewModel = $e->getApplication()->getMvcEvent()->getViewModel();
                 $userLogin = $auth->getStorage()->read();
-//                echo "<pre>";
-//                print_r($userLogin);
-//                echo "</pre>";
 
                 $viewModel->username_layout = $userLogin['username'];
+
+                $sm->get('ControllerPluginManager')->get('QHO\Controller\Plugin\AclPlugin')->RoleAccess($e);
+                $reponse = $e->getResponse();
+                if($reponse->getStatusCode() == 302){
+                    $e->stopPropagation();
+                    $controller->plugin('redirect')->toRoute('training/verify',array('action'=>'denied'));
+                }
                 //ktra ng dung dang nhap
                 // nếu chưa thì đưa về trnag login
-                if (!$auth->hasIdentity()) {
-                    $controller->plugin('redirect')->toRoute('training/verify', array('action' => 'login'));
-                }
+//                if (!$auth->hasIdentity()) {
+//                    $controller->plugin('redirect')->toRoute('training/verify', array('action' => 'login'));
+//                }
             }
-        });
+        },99);
     }
 
     public function getFormElementConfig(){
@@ -105,6 +114,10 @@ class Module implements AutoloaderProviderInterface
                     $form = new ShareForm('Share_Form');
                     return $form;
                 },
+                'AccessForm' => function($sm){
+                    $form = new AccessForm('Access_Form');
+                    return $form;
+                }
             )
         );
     }
