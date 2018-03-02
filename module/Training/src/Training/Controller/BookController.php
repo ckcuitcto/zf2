@@ -241,7 +241,7 @@ class BookController extends AbstractActionController
         return $this->redirect()->toUrl("https://www.sandbox.paypal.com/websrc?cmd=_express-checkout&token=$token&userAction=commit");
     }
 
-    public function paymentConfirmAction(){
+        public function paymentConfirmAction(){
         $sm = $this->getServiceLocator();
         $paypalSession = new \Zend\Session\Container('paypal');
         $token = $paypalSession->tokenId;

@@ -37,18 +37,27 @@
             <a class="navbar-brand" href="<?php echo $this->url('home') ?>"><img src="<?php echo $this->basePath('img/zf2-logo.png') ?>" alt="Zend Framework 2"/>&nbsp;<?php echo $this->translate('Thai duc') ?></a>
         </div>
         <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="<?php echo $this->url('home') ?>"><?php echo $this->translate('Home') ?></a></li>
-                <li ><a href="<?php echo $this->url('training/member') ?>"><?php echo $this->translate('Thành viên') ?></a></li>
-                <li ><a href="<?php echo $this->url('training/verify',array('action' => 'logout')) ?>"><?php echo $this->translate("Đăng xuất (").$this->layout()->username_layout.")"; ?></a></li>
-                <li ><a href="<?php echo $this->url('training/chat',array('action' => 'index')) ?>"><?php echo $this->translate("Chat") ?></a></li>
-                <li ><a href="<?php echo $this->url('training/file',array('action' => 'index')) ?>"><?php echo $this->translate("File") ?></a></li>
-                <li ><a href="<?php echo $this->url('training/book',array('action' => 'index')) ?>"><?php echo $this->translate("Book") ?></a></li>
-            </ul>
-        </div><!--/.nav-collapse -->
+            <?php
+                echo $this->navigation('member_navigation')->menu()->setAcl($this->acl)->setRole($this->role)->setMaxdepth(0)->setUlClass('nav navbar-nav');
+            ?>
+
+
+<!--          <ul class="nav navbar-nav">-->
+<!--                <li class="active"><a href="--><?php //echo $this->url('home') ?><!--">--><?php //echo $this->translate('Home') ?><!--</a></li>-->
+<!--                <li ><a href="--><?php //echo $this->url('training/member') ?><!--">--><?php //echo $this->translate('Thành viên') ?><!--</a></li>-->
+<!--                <li ><a href="--><?php //echo $this->url('training/verify',array('action' => 'logout')) ?><!--">--><?php //echo $this->translate("Đăng xuất (").$this->layout()->username_layout.")"; ?><!--</a></li>-->
+<!--                <li ><a href="--><?php //echo $this->url('training/chat',array('action' => 'index')) ?><!--">--><?php //echo $this->translate("Chat") ?><!--</a></li>-->
+<!--                <li ><a href="--><?php //echo $this->url('training/file',array('action' => 'index')) ?><!--">--><?php //echo $this->translate("File") ?><!--</a></li>-->
+<!--                <li ><a href="--><?php //echo $this->url('training/book',array('action' => 'index')) ?><!--">--><?php //echo $this->translate("Book") ?><!--</a></li>-->
+<!--            </ul>-->
+<!--        </div><!--/.nav-collapse -->-->
     </div>
 </nav>
 <div class="container">
+    <?php
+        echo $this->navigation('member_navigation')->breadCrumbs()->setLinkLast(false)->setMindepth(0)->setPartial('training/layout/breadCrumbs.phtml');
+
+    ?>
     <?php echo $this->content; ?>
     <hr>
     <footer>

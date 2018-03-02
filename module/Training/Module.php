@@ -71,14 +71,20 @@ class Module implements AutoloaderProviderInterface
             if ($controller instanceof Controller\VerifyController AND $actionName != 'logout') {
                 $controller->layout('layout/auth');
             } else {
-                $sm = $e->getApplication()->getServiceManager();
-                $auth = $sm->get('AuthService');
                 $viewModel = $e->getApplication()->getMvcEvent()->getViewModel();
-                $userLogin = $auth->getStorage()->read();
 
-                $viewModel->username_layout = $userLogin['username'];
+                $sm = $e->getApplication()->getServiceManager();
 
-                $sm->get('ControllerPluginManager')->get('QHO\Controller\Plugin\AclPlugin')->RoleAccess($e);
+                //bỏ vì đã gọi = navigation
+//                $auth = $sm->get('AuthService');
+//                $userLogin = $auth->getStorage()->read();
+//                $viewModel->username_layout = $userLogin['username'];
+
+                $plugin = $sm->get('ControllerPluginManager')->get('QHO\Controller\Plugin\AclPlugin');
+                $plugin->RoleAccess($e);
+                $viewModel->acl = $plugin->configAcl();
+                $viewModel->role = $plugin->getAuthService();
+
                 $reponse = $e->getResponse();
                 if($reponse->getStatusCode() == 302){
                     $e->stopPropagation();
@@ -195,7 +201,9 @@ class Module implements AutoloaderProviderInterface
                     $result = new ResultSet();
                     $result->setArrayObjectPrototype(new \Training\Model\Order());
                     return new TableGateway('orders', $db, null, $result);
-                }
+                },
+                'navigation' => 'Zend\Navigation\Service\DefaultNavigationFactory',
+                'member_navigation' => 'QHO\Navigation\MemberNavigationFactory'
             )
         );
     }

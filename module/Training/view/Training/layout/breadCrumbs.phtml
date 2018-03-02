@@ -1,0 +1,13 @@
+<ul class="breadcrumb">
+    <?php
+    foreach ($this->pages as $key => $page){
+        echo "<li>";
+        if($key < count($this->pages)-1){
+            echo "<a href='".$page->getHref()."'>".$page->getLabel()."</a>";
+        }else{
+            echo $page->getLabel();
+        }
+        echo "</li>";
+    }
+    ?>
+</ul>
