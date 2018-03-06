@@ -43,12 +43,27 @@ return array(
     ),
     'service_manager' => array(
         'factories' => array(
-            'Zend\Db\Adapter\Adapter' => function($sm){
+            'Zend\Db\Adapter\Adapter' => function ($sm) {
                 $adapterFactory = new Zend\Db\Adapter\AdapterServiceFactory();
                 $adapter = $adapterFactory->createService($sm);
                 \Zend\Db\TableGateway\Feature\GlobalAdapterFeature::setStaticAdapter($adapter);
                 return $adapter;
             },
         ),
-    )
+    ),
+    'doctrine' => [
+        'connection' => [
+            // default connection name
+            'orm_default' => [
+                'driverClass' => \Doctrine\DBAL\Driver\PDOMySql\Driver::class,
+                'params' => [
+                    'host' => 'localhost',
+                    'port' => '3306',
+                    'user' => 'root',
+                    'password' => '',
+                    'dbname' => 'zf2doctrine',
+                ],
+            ],
+        ],
+    ],
 );

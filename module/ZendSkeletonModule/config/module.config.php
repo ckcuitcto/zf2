@@ -6,7 +6,7 @@ use Zend\ServiceManager\Factory\InvokableFactory;
 return [
     'controllers' => [
         'factories' => [
-            Controller\SkeletonController::class => InvokableFactory::class,
+            Controller\IndexController::class => InvokableFactory::class,
         ],
     ],
     'router' => [
@@ -17,7 +17,7 @@ return [
                     // Change this to something specific to your module
                     'route'    => '/module-specific-root',
                     'defaults' => [
-                        'controller'    => Controller\SkeletonController::class,
+                        'controller'    => Controller\IndexController::class,
                         'action'        => 'index',
                     ],
                 ],

@@ -12,7 +12,8 @@
         "zendframework/zendframework": "~2.4.11",
         "zendframework/zendservice-recaptcha":"*",
         "zendcart/zendcart": "dev-master",
-        "speckcommerce/speck-paypal": "dev-master"
+        "speckcommerce/speck-paypal": "dev-master",
+        "doctrine/doctrine-orm-module": "*"
     },
     "autoload":{
         "psr-0":{"QHO\\":"vendor/DucLibrary/Library"}

@@ -1,0 +1,104 @@
+<?php
+
+    $this->headScript()->appendScript('
+        
+        $(document).ready(function(){
+            $("#commentForm").hide();
+            $("#showCmtForm").click(function(){
+                $("#commentForm").slideToggle("slow");
+            });
+             $("div.alert-success").delay(2000).slideUp();
+        });
+        
+    ','text/javascript');
+    echo $this->headStyle()->appendStyle('
+        .cmt{
+            border:1px solid #99CCFF;
+            padding: 10px;
+            background: #CCE5FF;
+            margin: 5px;
+        }
+    ');
+?>
+
+<div class="row">
+    <div class="col-md-7">
+        <h3><?= $post->getTitle() ?></h3>
+        <?php
+        echo "<p>";
+        $count = count($post->getTags());
+        if ($count) {
+            echo "Từ khoá: ";
+            $i = 0;
+            foreach ($post->getTags() as $tag) {
+                $i++;
+                $tagName = $tag->getName();
+                $tagUrl = str_replace(' ', '+', $tagName);
+                $link = $this->url('blog/post', array('action' => 'tag', 'tag' => $tagUrl));
+                if ($i == $count) {
+                    echo "<a href='$link'> $tagName </a> ";
+                } else {
+                    echo "<a href='$link'> $tagName </a> ,";
+                }
+            }
+            echo "-";
+        }
+        echo "Thời gian: " . $post->getDateCreated();
+        echo "</p>";
+        echo "<p> " . $post->getContent() . " </p>";
+
+        ?>
+        <hr>
+        <button id="showCmtForm" class="btn btn-primary"> Gửi phản hồi</button>
+        <?php
+        if(count($flash)){
+            foreach ($flash as $mess) {
+                echo "<div class='alert alert-success'>";
+                echo $mess;
+                echo "</div>";
+            }
+        }
+        ?>
+        <div id="commentForm">
+            <?php
+            $form->setAttribute('action', $this->url('blog/post', array('action' => 'read', 'id' => $post->getId())));
+            $form->prepare();
+
+            echo $this->form()->openTag($form);
+
+            echo "<div class='form-group'>";
+            echo $this->formLabel($form->get('email'));
+            echo $this->formElement($form->get('email'));
+            echo $this->formElementErrors($form->get('email'));
+            echo "</div>";
+
+            echo "<div class='form-group'>";
+            echo $this->formLabel($form->get('content'));
+            echo $this->formElement($form->get('content'));
+            echo $this->formElementErrors($form->get('content'));
+            echo "</div>";
+
+            echo $this->formSubmit($form->get('submit'));
+
+            echo $this->form()->closeTag();
+            ?>
+        </div>
+        <div class="comments">
+            <?php
+                $comments = $post->getComments();
+                if(count($comments)){
+                    foreach ($comments as $cmt){
+                        echo "<p class='cmt'> <b> ".$cmt->getEmail()."(".$cmt->getDateCreated()." )</b> <br>";
+                        echo $cmt->getContent();
+                        echo "</p>";
+                    }
+                }
+            ?>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <?php
+        echo $this->Menu()->callMenu();
+        ?>
+    </div>
+</div>

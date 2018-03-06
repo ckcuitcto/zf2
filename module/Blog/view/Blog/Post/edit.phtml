@@ -1,0 +1,71 @@
+<?php
+echo $this->headScript()
+    ->appendFile($this->basePath() . '/js/ckeditor/ckeditor.js')
+    ->appendFile($this->basePath() . '/js/ckeditor/adapters/jquery.js');
+
+?>
+<script>
+
+    var BASEPATH = "<?php echo $this->basePath() . '/js/ckeditor'; ?>";
+    $(document).ready(function () {
+        CKEDITOR.replace('infoEditor');
+        CKEDITOR.replace('contentEditor');
+    })
+</script>
+
+<div class="row">
+    <div class="col-md-10">
+        <h3> Thêm bài viết mới</h3>
+        <p>Vui lòng nhập đủ thông tin</p>
+        <?php
+
+        $form = $this->form;
+        $form->prepare();
+        $form->setAttribute('action', $this->url('blog/post', array('action' => 'edit', 'id' => $postId)));
+
+        echo $this->form()->openTag($form);
+
+        echo "<div class='form-group'>";
+        echo $this->formLabel($form->get('cate_id'));
+        echo $this->formElement($form->get('cate_id'));
+        echo $this->formElementErrors($form->get('cate_id'));
+        echo "</div>";
+
+        echo "<div class='form-group'>";
+        echo $this->formLabel($form->get('title'));
+        echo $this->formElement($form->get('title'));
+        echo $this->formElementErrors($form->get('title'));
+        echo "</div>";
+
+        echo "<div class='form-group'>";
+        echo $this->formLabel($form->get('info'));
+        echo $this->formElement($form->get('info'));
+        echo $this->formElementErrors($form->get('info'));
+        echo "</div>";
+
+        echo "<div class='form-group'>";
+        echo $this->formLabel($form->get('content'));
+        echo $this->formElement($form->get('content'));
+        echo $this->formElementErrors($form->get('content'));
+        echo "</div>";
+
+
+        echo "<div class='form-group'>";
+        echo $this->formLabel($form->get('status'));
+        echo "&nbsp &nbsp &nbsp";
+        echo $this->formElement($form->get('status'));
+        echo "</div>";
+
+        echo "<div class='form-group'>";
+        echo $this->formLabel($form->get('tags'));
+        echo $this->formElement($form->get('tags'));
+        echo $this->formElementErrors($form->get('tags'));
+        echo "<p class='help-block'>Các từ khoá cách nhau bởi dấu , </p>";
+        echo "</div>";
+
+        echo $this->formElement($form->get('submit'));
+        echo $this->form()->closeTag();
+
+        ?>
+    </div>
+</div>

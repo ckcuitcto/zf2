@@ -1,0 +1,52 @@
+<div class="row">
+    <div class="col-md-7">
+        <h3>Các bài viết mới</h3>
+        <?php
+
+        foreach ($paging as $post) {
+            $urlTitle = $this->Unicode()->make($post->getTitle());
+            echo " <h4> <a href='" . $this->url('blog/post', array('action' => 'read', 'id' => $post->getId(), 'title' => $urlTitle)) . "'>" . $post->getTitle() . "</a></h4>";
+
+            $count = (count($post->getComments())) ? count($post->getComments()) : 0;
+
+            echo "<p><b>Xuất bản</b>".$post->getDateCreated()." - <b><span class=\"glyphicon glyphicon-comment\"></span> $count</b> </p>";
+
+            echo $post->getInfo();
+            echo "<p align='right'> <a href='" . $this->url('blog/post', array('action' => 'read', 'id' => $post->getId(), 'title' => $urlTitle)) . "'> Đọc tiếp... </a>  </p>";
+            echo "<p>Từ khoá: ";
+            $count = count($post->getTags());
+            if ($count) {
+                $i = 0;
+                foreach ($post->getTags() as $tag) {
+                    $i++;
+                    $tagName = $tag->getName();
+                    $tagUrl = str_replace(' ', '+', $tagName);
+                    $link = $this->url('blog/post', array('action' => 'tag', 'tag' => $tagUrl));
+                    if ($i == $count) {
+                        echo "<a href='$link'> $tagName </a>";
+                    } else {
+                        echo "<a href='$link'> $tagName </a> ,";
+                    }
+                }
+            }
+            echo "</p>";
+        }
+        ?>
+        <?php
+        echo $this->paginationControl(
+            $this->paging,
+            'sliding',
+            array('partial/pagination.phtml', 'blog'),
+            array(
+                'route' => 'blog/post',
+                'params' => array('action' => 'index')
+            )
+        );
+        ?>
+    </div>
+    <div class="col-md-3">
+        <?php
+        echo $this->Menu()->callMenu();
+        ?>
+    </div>
+</div>

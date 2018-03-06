@@ -1,0 +1,40 @@
+<div class="row">
+    <div class="col-md-7">
+        <h3> Danh sách các bài viết</h3>
+
+        <?php
+        if(count($flash)){
+            foreach ($flash as $mess) {
+                echo "<div class='alert alert-success'>";
+                echo $mess;
+                echo "</div>";
+            }
+        }
+        ?>
+
+        <table class="table table-hover table-striped">
+            <tr>
+                <th>STT</th>
+                <th>Tên bài viết</th>
+                <th>Tình trạng</th>
+                <th>Thể loại</th>
+                <th>Sửa</th>
+                <th>Xoá</th>
+            </tr>
+            <?php
+                foreach ($posts as $key => $post){
+            ?>
+            <tr>
+                <td><?=$key+1?></td>
+                <td><?=$post->getTitle();?></td>
+                <td><?= ($post->getStatus()==1) ? "Chưa duyệt" : "Đã duyệt" ;?></td>
+                <td><?=$post->getCate()->getName();?></td>
+                <td><a href="<?= $this->url('blog/post', array('action'=>'edit','id'=> $post->getId())); ?>">Sửa</a></td>
+                <td><a href="<?= $this->url('blog/post', array('action'=>'delete','id'=> $post->getId())); ?>" onClick='return confirm_delete();'>Xoá</a></td>
+            </tr>
+            <?php } ?>
+        </table>
+        <hr>
+        <a href="<?php echo $this->url('blog/post', array('action'=> 'add')); ?>">Thêm bài viết mới</a>
+    </div>
+</div>
