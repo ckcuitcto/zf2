@@ -1,5 +1,9 @@
 <?php
+
 namespace Blog;
+
+use Blog\Entity\User;
+
 return array(
     'controllers' => array(
         'invokables' => array(
@@ -11,16 +15,16 @@ return array(
     'router' => array(
         'routes' => array(
             'blog' => array(
-                'type'    => 'Literal',
+                'type' => 'Literal',
                 'options' => array(
                     // Change this to something specific to your module
-                    'route'    => '/blog',
+                    'route' => '/blog',
                     'defaults' => array(
                         // Change this value to reflect the namespace in which
                         // the controllers for your module are found
                         '__NAMESPACE__' => 'Blog\Controller',
-                        'controller'    => 'Index',
-                        'action'        => 'index',
+                        'controller' => 'Index',
+                        'action' => 'index',
                     ),
                 ),
                 'may_terminate' => true,
@@ -30,51 +34,51 @@ return array(
                     // you may want to remove it and replace it with more
                     // specific routes.
                     'default' => array(
-                        'type'    => 'Segment',
+                        'type' => 'Segment',
                         'options' => array(
-                            'route'    => '/[:controller[/:action]]',
+                            'route' => '/[:controller[/:action]]',
                             'constraints' => array(
                                 'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                             ),
                             'defaults' => array(
-                                'controller'    => 'Index',
-                                'action'        => 'index',
+                                'controller' => 'Index',
+                                'action' => 'index',
                             ),
                         ),
                     ),
                     'post' => array(
-                        'type'    => 'Segment',
+                        'type' => 'Segment',
                         'options' => array(
-                            'route'    => '/post[/:action[/:id[-:title[.html]]][/key/:tag][/page/:page]]',
+                            'route' => '/post[/:action[/:id[-:title[.html]]][/key/:tag][/page/:page]]',
 //                            'route'    => '/post[/:action[/:id[-:title[.html]]][/key/:tag][/page/:page]]',
-                        // khi thay dấu - = dấu / ở trước title thì sẽ bị lỗi, cần loại bỏ page
+                            // khi thay dấu - = dấu / ở trước title thì sẽ bị lỗi, cần loại bỏ page
                             // nếu dùng dấu - đó thì bỏ cái page ^page ra
                             'constraints' => array(
-                                'action'     => '[a-zA-Z][a-zA-Z0-9_-]+',
-                                'id'        => '[0-9]+',
-                                'tag'       =>  '[a-zA-Z0-9_+-]+',
-                                'title'     =>  '[a-zA-Z0-9_-]+',
-                                'page'        => '[0-9]+',
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]+',
+                                'id' => '[0-9]+',
+                                'tag' => '[a-zA-Z0-9_+-]+',
+                                'title' => '[a-zA-Z0-9_-]+',
+                                'page' => '[0-9]+',
                             ),
                             'defaults' => array(
                                 '__NAMESPACE__' => 'Blog\Controller',
-                                'controller'    => 'Post',
-                                'action'        => 'index',
+                                'controller' => 'Post',
+                                'action' => 'index',
                             ),
                         ),
                     ),
                     'auth' => array(
-                        'type'    => 'Segment',
+                        'type' => 'Segment',
                         'options' => array(
-                            'route'    => '/auth[/:action]',
+                            'route' => '/auth[/:action]',
                             'constraints' => array(
-                                'action'     => '[a-zA-Z][a-zA-Z0-9_-]+',
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]+',
                             ),
                             'defaults' => array(
                                 '__NAMESPACE__' => 'Blog\Controller',
-                                'controller'    => 'Auth',
-                                'action'        => 'index',
+                                'controller' => 'Auth',
+                                'action' => 'index',
                             ),
                         ),
                     ),
@@ -87,7 +91,7 @@ return array(
             'ZendSkeletonModule' => __DIR__ . '/../view',
         ),
         'template_map' => array(
-            'layout/layout' => __DIR__ . '/../view/Blog/layout/layout.phtml',
+//            'layout/blog' => __DIR__ . '/../view/blog/layout/layout.phtml',
         )
     ),
 
@@ -103,6 +107,18 @@ return array(
                     __NAMESPACE__ . '\Entity' => __NAMESPACE__ . '_driver'
                 )
             )
-        )
+        ),
+        'authentication' => [
+            'orm_default' => [
+                'object_manager' => 'Doctrine\ORM\EntityManager',
+                'identity_class' => 'Blog\Entity\User',
+                'identity_property' => 'username',
+                'credential_property' => 'password',
+//                'credential_callable' => 'Blog\Controller\AuthController::verifyCredential'
+                'credential_callable' => function (User $user, $passwordGive) {
+                    return $user->getPassword() == md5($passwordGive) AND $user->getLevel()==2;
+                }
+            ],
+        ],
     ),
 );

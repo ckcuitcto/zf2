@@ -9,6 +9,7 @@
 namespace Training\Controller;
 
 
+use Blog\Controller\MainController;
 use QHO\Mail\MailMessage;
 use Zend\Captcha\ReCaptcha;
 use Zend\Mvc\Controller\AbstractActionController;
@@ -16,7 +17,7 @@ use Zend\View\Model\ViewModel;
 use Zend\Mail;
 use Zend\Mail\Transport\Smtp as SmtpTransport;
 
-class VerifyController extends AbstractActionController
+class VerifyController extends MainController
 {
     protected $authService;
     protected $myAuth;
@@ -126,7 +127,7 @@ class VerifyController extends AbstractActionController
         $this->getAuthService()->clearIdentity();
         $this->getMyAuth()->forgetMe();
         $this->flashMessenger()->addMessage('Đăng xuất thành công');
-        return $this->redirect()->toRoute('training/verify', array('action', 'login'));
+        return $this->redirect()->toRoute('training/verify', array('action' => 'login'));
     }
 
     public function forgotAction()

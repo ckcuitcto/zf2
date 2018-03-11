@@ -9,11 +9,12 @@
 namespace Training\Controller;
 
 
+use Blog\Controller\MainController;
 use Training\Form\ChatForm;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
-class ChatController extends AbstractActionController
+class ChatController extends MainController
 {
     protected $authService;
 

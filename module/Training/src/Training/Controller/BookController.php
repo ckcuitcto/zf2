@@ -9,13 +9,14 @@
 namespace Training\Controller;
 
 
+use Blog\Controller\MainController;
 use Training\Model\Order;
 use Zend\Form\Form;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use ZendCart\Controller\Plugin\ZendCart;
 
-class BookController extends AbstractActionController
+class BookController extends MainController
 {
     protected $authService;
     public function getAuthService()

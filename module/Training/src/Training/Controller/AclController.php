@@ -9,12 +9,13 @@
 namespace Training\Controller;
 
 
+use Blog\Controller\MainController;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Mvc\MvcEvent;
 use Zend\View\Model\ViewModel;
 use Zend\Permissions\Acl\Role\GenericRole as Role;
 
-class AclController extends AbstractActionController
+class AclController extends MainController
 {
     public function onDispatch(MvcEvent $e)
     {

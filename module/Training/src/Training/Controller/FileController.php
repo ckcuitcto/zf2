@@ -9,6 +9,7 @@
 namespace Training\Controller;
 
 
+use Blog\Controller\MainController;
 use QHO\Mail\MailMessage;
 use Training\Model\File;
 use Zend\Math\Rand;
@@ -19,7 +20,7 @@ use Zend\View\Model\ViewModel;
 use Zend\Mail;
 use Zend\Mail\Transport\Smtp as SmtpTransport;
 
-class FileController extends AbstractActionController
+class FileController extends MainController
 {
     protected $authService;
     protected $smtp;

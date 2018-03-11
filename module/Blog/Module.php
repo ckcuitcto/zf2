@@ -58,7 +58,7 @@ class Module implements AutoloaderProviderInterface
                     $form = new \Blog\Form\CommentForm('Comment_Form');
                     return $form;
                 },
-                'VerifyForm' => function($sm){
+                'AuthForm' => function($sm){
                     $form = new VerifyForm('Login_Form');
                     return $form;
                 }
@@ -85,7 +85,15 @@ class Module implements AutoloaderProviderInterface
         return array(
             'invokables' => array(
                 'PostManager' => 'Blog\Service\PostManager',
-            )
+            ),
+            'factories' => [
+                    'ZendAuth' => function ($serviceManager) {
+                    // If you are using DoctrineORMModule:
+                    return $serviceManager->get('doctrine.authenticationservice.orm_default');
+                    // If you are using DoctrineODMModule:
+//                    return $serviceManager->get('doctrine.authenticationservice.odm_default');
+                },
+            ],
         );
     }
 }

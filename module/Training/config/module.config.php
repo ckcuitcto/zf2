@@ -15,7 +15,7 @@ return array(
             'Training' => __DIR__ . '/../view',
         ),
         'template_map' => array(
-            'layout/layout' => __DIR__ . '/../view/Training/layout/layout.phtml',
+//            'layout/layout' => __DIR__ . '/../view/Training/layout/layout.phtml',
             'layout/auth' => __DIR__ . '/../view/Training/layout/auth.phtml',
         )
     ),

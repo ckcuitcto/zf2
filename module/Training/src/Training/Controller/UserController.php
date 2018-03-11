@@ -8,6 +8,7 @@
 
 namespace Training\Controller;
 
+use Blog\Controller\MainController;
 use QHO\Mail\MailManager;
 use QHO\Mail\MailMessage;
 use Training\Form\UserForm;
@@ -15,7 +16,7 @@ use Training\Model\User;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
-class UserController extends AbstractActionController
+class UserController extends MainController
 {
     public function demoMailAction()
     {
