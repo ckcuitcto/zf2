@@ -164,8 +164,8 @@ class Post
         return $this->cate;
     }
     /**
-     * set the date when this post was created
-     * @param string $dateCreated
+     * set the Cate 
+     * @param Category $cate
      */
     public function setCate(Category $cate){
         $this->cate = $cate;
