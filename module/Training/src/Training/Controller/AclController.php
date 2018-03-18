@@ -28,6 +28,7 @@ class AclController extends MainController
         $acl->addRole(new Role('admin',array('member')));
 
         // thêm tài nguyên để phân quyền
+        // module:controller
         $acl->addResource('training')
             ->addResource('training:acl','training');
 

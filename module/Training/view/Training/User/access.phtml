@@ -32,6 +32,41 @@ $this->headScript()->appendScript('
         }
     }
 ');
+$this->headScript()->captureStart();
+echo <<<JS
+    $(document).ready(function(){
+        isCheckedController("user");
+        check_enable("user","useraction");
+        
+         isCheckedController("file");
+        check_enable("file","fileaction");
+        
+         isCheckedController("chat");
+        check_enable("chat","chataction");
+        
+         isCheckedController("book");
+        check_enable("book","bookaction");
+    })
+    
+    function check_enable(controller,namecheckbox){
+        $("#"+controller).click(function(e){
+            if(this.checked){
+                $("input."+namecheckbox).removeAttr("disabled");
+            }else{
+                $("input."+namecheckbox).attr("disabled",true);
+                $("input."+namecheckbox).attr("checked",false);
+            }
+        })
+    }
+    
+    function isCheckedController(controller){
+        check = $("input#"+controller).attr("checked");
+        if (check != "checked"){
+            $("input."+controller+"action").attr("disabled",true);
+        }
+    }
+JS;
+$this->headScript()->captureEnd();
 //
 //$("#user").click(function(e){
 //    check = this.checked;

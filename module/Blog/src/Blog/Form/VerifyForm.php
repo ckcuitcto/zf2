@@ -35,7 +35,7 @@ class VerifyForm extends Form{
 				'name' => 'submit',
 				'attributes' => array(
 						'value' => 'Submit',
-						'class' => 'btn btn-primary'
+						'class' => 'btn btn-lg btn-success btn-block'
 					),
 			));	
 	}
